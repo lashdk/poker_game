@@ -77,6 +77,7 @@ class Player():
         self.kicker=0
         self.cash=cash
         self.fold_status=False
+        self.all_status=False
 
     def GameCard(self,Hole_card):
         self.Cards=Hole_card
@@ -110,6 +111,12 @@ class Player():
     def getFoldStat(self):
         return self.fold_status
 
+    def getAllStat(self):
+        return self.all_status
+
+    def All_in(self):
+        self.all_status=True
+
     def addCash(self,amount):
         self.cash+=amount
 
@@ -131,6 +138,11 @@ class Player():
         self.MaxVal=0
         self.kicker=0
         self.fold_status=False
+        self.all_status=False
+
+
+
+
 
 
 def BestHand(player_card):
@@ -142,16 +154,9 @@ def BestHand(player_card):
         temp_list=self.cards[card]
         temp_list=list(temp_list)
         self.values.append(temp_list[0])
-        self.suits.append(temp_list[1])
+        self.suits.append(temp_list[1]
 
 
-    def getValue(self):
-        return self.values
-
-
-
-    def getSuit(self):
-        return self.suits
 
     def RoyalFlush(self):
         rank=copy.deepcopy(self.values)
@@ -162,10 +167,7 @@ def BestHand(player_card):
         club=[]
         royal_straight="1011121314"
         hand_order=0
-        MaxVal=0
-        kicker=0
-
-
+        flush_stat=False
 
         for a in range(len(self.values)):
             if colour[a]=="Heart":
@@ -187,7 +189,7 @@ def BestHand(player_card):
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
-            return (0,0,0)
+            return (flush_stat,hand_order,0,0)
 
 
         max_colour.sort()
@@ -196,10 +198,13 @@ def BestHand(player_card):
             result_straight +=str(a)
 
         if royal_straight in result_straight:
-            hand_order =10
+            hand_order=10
+            flush_stat=True
 
+        return (flush_stat,hand_order,0,0)
 
-        return (hand_order,MaxVal,kicker)
+    k=RoyalFlush()
+    print(k)
 
 
 

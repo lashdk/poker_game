@@ -10,14 +10,14 @@ import copy
 import collections
 class Deal(object):
     def __init__(self):
-        self.CardDeck={}      
-        self.ranks=("2","3","4","5","6","7","8","9",'10','11','12','13',"14") 
+        self.CardDeck={}
+        self.ranks=("2","3","4","5","6","7","8","9",'10','11','12','13',"14")
         self.suits=('Heart','Diamond','Club',"Spade")
         self.ComCard={}
         self.listx=[]
-    
-    
-    
+
+
+
     def MakeDeck(self):
         i=2
         for rank in self.ranks:
@@ -26,22 +26,22 @@ class Deal(object):
                 self.CardDeck[rank+suit].append(i)
                 self.CardDeck[rank+suit].append(suit)
             i +=1
-        
-        
-        
-        
-        
-    
+
+
+
+
+
+
     def DealComCards(self):
-        
+
         self.listx=self.CardDeck.keys()
         self.listx=list(self.listx)
-        
+
         for i in range(5):
             random_card=random.choice(self.listx)
             self.ComCard[random_card]=self.CardDeck[random_card]
             self.listx.remove(random_card)
-        
+
     def DealHoles(self,Players):
         for i in range(len(Players)):
             PlayerCards={}
@@ -50,14 +50,14 @@ class Deal(object):
                 PlayerCards[rand_card]=self.CardDeck[rand_card]
                 self.listx.remove(rand_card)
             Players[i].GameCard(PlayerCards,self.ComCard)
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
 class Player():
     def __init__(self,name):
         self.name=name
@@ -65,38 +65,38 @@ class Player():
         self.Hand_order=0
         self.MaxVal=0
         self.kicker=0
-        
+
     def GameCard(self,Hole_card,Community_card):
         self.Cards={**Hole_card,**Community_card}
-    
+
     def getCards(self):
         return self.Cards
-    
+
     def setHand_order(self,hand_order):
         self.Hand_order=hand_order
-        
+
     def setMaxVal(self,MaxVal):
         self.MaxVal=MaxVal
-        
+
     def setKicker(self,kicker):
         self.kicker=kicker
-        
+
     def getHand_order(self):
         return self.Hand_order
-    
+
     def getMaxVal(self):
         return self.MaxVal
-    
+
     def getKicker(self):
         return self.kicker
-    
+
     def getName(self):
         return self.name
 
 
-    
-    
-    
+
+
+
 
 
 
@@ -117,16 +117,16 @@ class BestHand():
             temp_list=list(temp_list)
             self.values.append(temp_list[0])
             self.suits.append(temp_list[1])
-        
-        
+
+
     def getValue(self):
         return self.values
-    
-    
-    
+
+
+
     def getSuit(self):
         return self.suits
-    
+
     def RoyalFlush(self):
         rank=copy.deepcopy(self.values)
         colour=copy.deepcopy(self.suits)
@@ -138,9 +138,9 @@ class BestHand():
         hand_order=0
         MaxVal=0
         kicker=0
-        
-        
-        
+
+
+
         for a in range(len(self.values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
@@ -150,33 +150,33 @@ class BestHand():
                 spade.append(rank[a])
             else:
                 club.append(rank[a])
-                
+
         if len(heart)>=5:
             max_colour=copy.deepcopy(heart)
         elif len(diamond)>=5:
             max_colour=copy.deepcopy(diamond)
-            
+
         elif len(spade)>=5:
             max_colour=copy.deepcopy(spade)
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
             return (0,0,0)
-            
-        
+
+
         max_colour.sort()
         result_straight=""
         for a in max_colour:
             result_straight +=str(a)
-            
+
         if royal_straight in result_straight:
             hand_order =10
-        
-        
+
+
         return (hand_order,MaxVal,kicker)
-    
-    
-    
+
+
+
     def CheckRoyalFlush(self):
         rank=copy.deepcopy(self.values)
         colour=copy.deepcopy(self.suits)
@@ -188,9 +188,9 @@ class BestHand():
         hand_order=0
         MaxVal=0
         kicker=0
-        
-        
-        
+
+
+
         for a in range(len(self.values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
@@ -200,41 +200,41 @@ class BestHand():
                 spade.append(rank[a])
             else:
                 club.append(rank[a])
-                
+
         if len(heart)>=5:
             max_colour=copy.deepcopy(heart)
         elif len(diamond)>=5:
             max_colour=copy.deepcopy(diamond)
-            
+
         elif len(spade)>=5:
             max_colour=copy.deepcopy(spade)
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
             return False
-            
-        
+
+
         max_colour.sort()
         result_straight=""
         for a in max_colour:
             result_straight +=str(a)
-            
+
         if royal_straight in result_straight:
             hand_order=10
             return True
-        
-        
-        
-        
+
+
+
+
         return False
-        
-        
-        
-      
-    
-        
-    
-    
+
+
+
+
+
+
+
+
     def StraightFlush(self):
         rank=copy.deepcopy(self.values)
         colour=copy.deepcopy(self.suits)
@@ -244,24 +244,24 @@ class BestHand():
         club=[]
         normal_straight=[]
         normal_straight.append("234514")
-    
+
         for i in range(2,14):
             result=""
             if i+5<15:
-                
+
                 for j in range(5):
                     result +=str(i+j)
                 normal_straight.append(result)
-        
-        
-        
-        
+
+
+
+
         hand_order=0
         MaxVal=0
         kicker=0
-        
-        
-        
+
+
+
         for a in range(len(self.values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
@@ -271,26 +271,26 @@ class BestHand():
                 spade.append(rank[a])
             else:
                 club.append(rank[a])
-                
+
         if len(heart)>=5:
             max_colour=copy.deepcopy(heart)
         elif len(diamond)>=5:
             max_colour=copy.deepcopy(diamond)
-            
+
         elif len(spade)>=5:
             max_colour=copy.deepcopy(spade)
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
             return (0,0,0)
-            
-        
+
+
         max_colour.sort()
         result_straight=""
         for a in max_colour:
             result_straight +=str(a)
-    
-            
+
+
         for b in normal_straight:
             if b in result_straight:
                 hand_order=9
@@ -300,16 +300,16 @@ class BestHand():
                 else:
                     last_digit +=10
                     MaxVal=last_digit
-            
-                
-        
-        
-        
-        
+
+
+
+
+
+
         return (hand_order,MaxVal,kicker)
-    
-    
-    
+
+
+
     def CheckStraightFlush(self):
         rank=copy.deepcopy(self.values)
         colour=copy.deepcopy(self.suits)
@@ -319,24 +319,24 @@ class BestHand():
         club=[]
         normal_straight=[]
         normal_straight.append("234514")
-    
+
         for i in range(2,14):
             result=""
             if i+5<15:
-                
+
                 for j in range(5):
                     result +=str(i+j)
                 normal_straight.append(result)
-        
-       
-        
-        
+
+
+
+
         hand_order=0
         MaxVal=0
         kicker=0
-        
-        
-        
+
+
+
         for a in range(len(self.values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
@@ -346,26 +346,26 @@ class BestHand():
                 spade.append(rank[a])
             else:
                 club.append(rank[a])
-                
+
         if len(heart)>=5:
             max_colour=copy.deepcopy(heart)
         elif len(diamond)>=5:
             max_colour=copy.deepcopy(diamond)
-            
+
         elif len(spade)>=5:
             max_colour=copy.deepcopy(spade)
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
             return False
-            
-        
+
+
         max_colour.sort()
         result_straight=""
         for a in max_colour:
             result_straight +=str(a)
-    
-            
+
+
         for b in normal_straight:
             if b in result_straight:
                 hand_order=9
@@ -376,15 +376,15 @@ class BestHand():
                 else:
                     last_digit +=10
                     MaxVal=last_digit
-            
-                
-        
-        
-        
-        
+
+
+
+
+
+
         return False
-    
-    
+
+
     def FourKind(self):
         rank=copy.deepcopy(self.values)
         max_times=0
@@ -397,25 +397,25 @@ class BestHand():
             if times>=max_times:
                 max_times=times
                 card_value=a
-        
+
         if max_times==4:
             hand_order=8
             MaxVal=card_value
         else:
             return (0,0,0)
-        
+
         for i in range(4):
             rank.remove(MaxVal)
-        
+
         rank.sort()
         kicker=rank[-1]
-        
-        
-        
+
+
+
         return (hand_order,MaxVal,kicker)
-    
-    
-    
+
+
+
     def CheckFourKind(self):
         rank=copy.deepcopy(self.values)
         max_times=0
@@ -428,21 +428,21 @@ class BestHand():
             if times>=max_times:
                 max_times=times
                 card_value=a
-        
+
         if max_times==4:
             hand_order=8
             MaxVal=card_value
             return True
         else:
             return False
-        
-        
-        
-        
-        
-    
-    
-    
+
+
+
+
+
+
+
+
     def FullHouse(self):
         rank=copy.deepcopy(self.values)
         max_times=0
@@ -452,7 +452,7 @@ class BestHand():
         pair=0
         kicker=0
         count=collections.Counter(rank)
-        
+
         for key in count:
             if count[key]>max_times:
                 max_times=count[key]
@@ -460,16 +460,16 @@ class BestHand():
             elif count[key]==max_times:
                 if key>card_value:
                     card_value=key
-                
-    
-                
-                
-                    
-                
-        
+
+
+
+
+
+
+
         if max_times==3:
-            
-            
+
+
             for key in count:
                 if key!=card_value:
                     if count[key]>=2 and key>pair:
@@ -477,15 +477,15 @@ class BestHand():
                         hand_order=7
                         MaxVal=card_value
                         kicker=pair
-                        
-                    
+
+
         else:
             return(0,0,0)
-                        
-        
+
+
         return (hand_order,MaxVal,kicker)
-    
-    
+
+
     def CheckFullHouse(self):
         rank=copy.deepcopy(self.values)
         max_times=0
@@ -495,7 +495,7 @@ class BestHand():
         pair=0
         kicker=0
         count=collections.Counter(rank)
-        
+
         for key in count:
             if count[key]>max_times:
                 max_times=count[key]
@@ -503,10 +503,10 @@ class BestHand():
             elif count[key]==max_times:
                 if key>card_value:
                     card_value=key
-        
+
         if max_times==3:
-            
-            
+
+
             for key in count:
                 if key!=card_value:
                     if count[key]>=2 and key>pair:
@@ -515,19 +515,19 @@ class BestHand():
                         MaxVal=card_value
                         kicker=pair
                         return True
-        
+
         return False
-            
-            
-                        
-        
-        
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
     def Flush(self):
         rank=copy.deepcopy(self.values)
         colour=copy.deepcopy(self.suits)
@@ -535,13 +535,13 @@ class BestHand():
         diamond=[]
         spade=[]
         club=[]
-        
+
         hand_order=0
         MaxVal=0
         kicker=0
-        
-        
-        
+
+
+
         for a in range(len(self.values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
@@ -551,31 +551,31 @@ class BestHand():
                 spade.append(rank[a])
             else:
                 club.append(rank[a])
-                
+
         if len(heart)>=5:
             max_colour=copy.deepcopy(heart)
         elif len(diamond)>=5:
             max_colour=copy.deepcopy(diamond)
-            
+
         elif len(spade)>=5:
             max_colour=copy.deepcopy(spade)
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
             return (0,0,0)
-        
-        
+
+
         max_colour.sort()
         hand_order=6
         MaxVal=max_colour[-1]
-        
-        
-        
-        
-        
+
+
+
+
+
         return (hand_order,MaxVal,kicker)
-        
-    
+
+
     def CheckFlush(self):
         rank=copy.deepcopy(self.values)
         colour=copy.deepcopy(self.suits)
@@ -583,13 +583,13 @@ class BestHand():
         diamond=[]
         spade=[]
         club=[]
-        
+
         hand_order=0
         MaxVal=0
         kicker=0
-        
-        
-        
+
+
+
         for a in range(len(self.values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
@@ -599,32 +599,32 @@ class BestHand():
                 spade.append(rank[a])
             else:
                 club.append(rank[a])
-                
+
         if len(heart)>=5:
             max_colour=copy.deepcopy(heart)
         elif len(diamond)>=5:
             max_colour=copy.deepcopy(diamond)
-            
+
         elif len(spade)>=5:
             max_colour=copy.deepcopy(spade)
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
             return False
-        
-        
+
+
         max_colour.sort()
         hand_order=6
         MaxVal=max_colour[-1]
-        
-        
-        
-        
-        
+
+
+
+
+
         return True
-    
-    
-    
+
+
+
     def Straight(self):
         rank=copy.deepcopy(self.values)
         hand_order=0
@@ -635,25 +635,25 @@ class BestHand():
         for i in range(1,10):
             result=""
             if i+5<15:
-                
+
                 for j in range(1,6):
                     result +=str(i+j)
                 straight.append(result)
-        
-     
-        
-        
+
+
+
+
         unique_rank=[]
         for i in rank:
             if i not in unique_rank:
                 unique_rank.append(i)
-        
+
         unique_rank.sort()
         result=""
         for a in unique_rank:
             result +=str(a)
-            
-        
+
+
         for b in straight:
             if b in result:
                 hand_order=5
@@ -663,11 +663,11 @@ class BestHand():
                 else:
                     last_digit +=10
                     MaxVal=last_digit
-                
-                    
-        
+
+
+
         return (hand_order,MaxVal,kicker)
-    
+
     def CheckStraight(self):
         rank=copy.deepcopy(self.values)
         hand_order=0
@@ -678,25 +678,25 @@ class BestHand():
         for i in range(1,10):
             result=""
             if i+5<15:
-                
+
                 for j in range(1,6):
                     result +=str(i+j)
                 straight.append(result)
-        
-     
-        
-        
+
+
+
+
         unique_rank=[]
         for i in rank:
             if i not in unique_rank:
                 unique_rank.append(i)
-        
+
         unique_rank.sort()
         result=""
         for a in unique_rank:
             result +=str(a)
-            
-        
+
+
         for b in straight:
             if b in result:
                 hand_order=5
@@ -706,14 +706,14 @@ class BestHand():
                 else:
                     last_digit +=10
                     MaxVal=last_digit
-                
+
                 return True
-            
-            
+
+
         return False
-    
-    
-    
+
+
+
     def ThreeKind(self):
         rank=copy.deepcopy(self.values)
         max_times=0
@@ -724,7 +724,7 @@ class BestHand():
         kicker2=0
         kicker=0
         count=collections.Counter(rank)
-        
+
         for key in count:
             if count[key]>max_times:
                 max_times=count[key]
@@ -732,22 +732,22 @@ class BestHand():
             elif count[key]==max_times:
                 if key>card_value:
                     card_value=key
-                    
+
         if max_times==3:
             for a in range(3):
                 rank.remove(card_value)
-                
+
             rank.sort()
             hand_order=4
             MaxVal=card_value
             kicker1=rank[-1]
             kicker2=rank[-2]
             kicker=int(str(kicker1)+str(kicker2))
-            
-        
-        
+
+
+
         return (hand_order,MaxVal,kicker)
-    
+
     def CheckThreeKind(self):
         rank=copy.deepcopy(self.values)
         max_times=0
@@ -756,7 +756,7 @@ class BestHand():
         MaxVal=0
         kicker=0
         count=collections.Counter(rank)
-        
+
         for key in count:
             if count[key]>max_times:
                 max_times=count[key]
@@ -764,12 +764,12 @@ class BestHand():
             elif count[key]==max_times:
                 if key>card_value:
                     card_value=key
-                    
+
         if max_times==3:
-            
+
             for a in range(3):
                 rank.remove(card_value)
-                
+
             rank.sort()
             hand_order=4
             MaxVal=card_value
@@ -777,11 +777,11 @@ class BestHand():
             return True
         else:
             return False
-            
-        
-        
-        
-        
+
+
+
+
+
     def TwoPair(self):
         rank=copy.deepcopy(self.values)
         count=collections.Counter(rank)
@@ -791,73 +791,73 @@ class BestHand():
         kicker1=0
         kicker2=0
         pairs=[]
-        
+
         for key in count:
             if count[key]==2:
                 pairs.append(key)
-               
-        
+
+
         if len(pairs)>=2:
-            
+
             pairs.sort()
             pairs=pairs[-2:]
             MaxVal=max(pairs)
             kicker1=pairs[0]
             hand_order=3
-            
+
             for a in pairs:
                 for b in range(2):
                     rank.remove(a)
-                
+
             kicker2=max(rank)
             kicker=int(str(kicker1)+str(kicker2))
         else:
             return(0,0,0)
-            
-        
-        
-        
+
+
+
+
         return (hand_order,MaxVal,kicker)
-    
-    
-    
+
+
+
     def CheckTwoPair(self):
         rank=copy.deepcopy(self.values)
         count=collections.Counter(rank)
-        
+
         hand_order=0
         MaxVal=0
         kicker1=0
         kicker2=0
         pairs=[]
-        
+
         for key in count:
             if count[key]==2:
                 pairs.append(key)
-        
-                
+
+
         if len(pairs)>=2:
-            
+
             return True
             pairs.sort()
             pairs=pairs[-2:]
             MaxVal=max(pairs)
             kicker1=pairs[0]
             hand_order=3
-            
+
             for a in pairs:
                 for b in range(2):
                     rank.remove(a)
-                
+
             kicker2=max(rank)
-            
-        
-        
-        
+
+
+
+
         return False
-    
-    
-    
+
+
+
     def OnePair(self):
         rank=copy.deepcopy(self.values)
         count=collections.Counter(rank)
@@ -868,35 +868,35 @@ class BestHand():
         kicker2=0
         kicker3=0
         pairs=[]
-        
+
         for key in count:
             if count[key]==2:
                 pairs.append(key)
-                
+
         if len(pairs)==1:
-            
+
             pairs.sort()
             pairs=pairs[-1:]
             MaxVal=max(pairs)
-            
+
             hand_order=2
-            
+
             for a in pairs:
                 for b in range(2):
                     rank.remove(a)
-            rank.sort() 
+            rank.sort()
             kicker1=rank[-1]
             kicker2=rank[-2]
             kicker3=rank[-3]
             kicker=int(str(kicker1)+str(kicker2)+str(kicker3))
-            
-        
-        
-        
+
+
+
+
         return (hand_order,MaxVal,kicker)
-    
-    
-    
+
+
+
     def CheckOnePair(self):
         rank=copy.deepcopy(self.values)
         count=collections.Counter(rank)
@@ -906,33 +906,33 @@ class BestHand():
         kicker2=0
         kicker3=0
         pairs=[]
-        
+
         for key in count:
             if count[key]==2:
                 pairs.append(key)
-                
+
         if len(pairs)==1:
             return True
             pairs.sort()
             pairs=pairs[-1:]
             MaxVal=max(pairs)
-            
+
             hand_order=2
-            
+
             for a in pairs:
                 for b in range(2):
                     rank.remove(a)
-            rank.sort() 
+            rank.sort()
             kicker1=rank[-1]
             kicker2=rank[-2]
             kicker3=rank[-3]
-            
-        
-        
-        
+
+
+
+
         return False
-    
-    
+
+
     def HighCard(self):
         rank=copy.deepcopy(self.values)
         hand_order=1
@@ -944,23 +944,23 @@ class BestHand():
         kicker3=rank[-4]
         kicker4=rank[-5]
         kicker=int(str(kicker1)+str(kicker2)+str(kicker3)+str(kicker4))
-        
-        
-        
-        
+
+
+
+
         return (hand_order,MaxVal,kicker)
-        
-        
-        
-    
-    
-    
-            
-            
-            
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+
+
 class PokerHand():
     def __init__(self):
         self.players=[]
@@ -968,25 +968,25 @@ class PokerHand():
         self.best_hand_order=0
         self.best_kicker=0
         self.best_MaxVal=0
-        
+
         self.winner=[]
-        
+
     def AddPlayer(self,name):
         self.players.append(Player(name))
-        
+
     def Game(self):
         self.game.MakeDeck()
         self.game.DealComCards()
         self.game.DealHoles(self.players)
-        
+
         for play in self.players:
             cards=play.getCards()
-            
-            
-            
-            
+
+
+
+
             p=BestHand(cards)
-            
+
             if p.CheckRoyalFlush():
                 hand_order,MaxVal,kicker=p.RoyalFlush()
             elif p.CheckStraightFlush():
@@ -1007,28 +1007,28 @@ class PokerHand():
                 hand_order,MaxVal,kicker=p.OnePair()
             else:
                 hand_order,MaxVal,kicker=p.HighCard()
-            
-            
+
+
             play.setHand_order(hand_order)
             play.setMaxVal(MaxVal)
             play.setKicker(kicker)
-            
-        
-        
+
+
+
         for play in self.players:
-            
+
             player_hand_order=play.getHand_order()
             player_kicker=play.getKicker()
             player_MaxVal=play.getMaxVal()
-            
-            
-            
+
+
+
             if player_hand_order > self.best_hand_order:
                 self.best_hand_order=player_hand_order
                 self.best_MaxVal=player_MaxVal
                 self.best_kicker=player_kicker
-                
-            
+
+
             if player_hand_order==self.best_hand_order:
                 if player_MaxVal > self.best_MaxVal:
                     self.best_hand_order=player_hand_order
@@ -1039,20 +1039,20 @@ class PokerHand():
                         self.best_hand_order=player_hand_order
                         self.best_MaxVal=player_MaxVal
                         self.best_kicker=player_kicker
-        
-        
+
+
     def ShowDown(self):
         for play in self.players:
             player_name=play.getName()
             player_hand_order=play.getHand_order()
             player_kicker=play.getKicker()
             player_MaxVal=play.getMaxVal()
-            
-            
+
+
             if player_hand_order==self.best_hand_order and player_MaxVal==self.best_MaxVal and player_kicker==self.best_kicker:
                 self.winner.append(play)
-                
-        
+
+
     def PrintResult(self):
         print("----------Result---------")
         WinningHands={1:"HighCard",2:"OnePair",3:"TwoPair",4:"Three of a Kind",5:"Straight",6:"Flush",7:"FullHouse",8:"Four of a kind",9:"StraightFlush",10:"RoyalFlush"}
@@ -1064,22 +1064,22 @@ class PokerHand():
             player_kicker=play.getKicker()
             player_MaxVal=play.getMaxVal
             player_card=play.getCards()
-            
+
             print(player_name+" won the game with "+WinningHands[player_hand_order])
-            
-            
+
+
     def getHand_order(self):
         return self.best_hand_order
-    
-    
+
+
     def getWinner(self):
         return self.winner
-    
+
     def getPlayer(self):
         return self.players
-    
-    
-    
+
+
+
 
 
 
@@ -1090,7 +1090,7 @@ class PokerHand():
 
 
 def PokerSimulation(numHands,toPrint=False):
-  
+
     numHighcard=0
     numOnepair=0
     numTwopair=0
@@ -1102,8 +1102,8 @@ def PokerSimulation(numHands,toPrint=False):
     numStraightflush=0
     numRoyalflush=0
     a=[]
-    
-    
+
+
     for b in range(numHands):
         p=PokerHand()
         p.AddPlayer("Player 1")
@@ -1113,45 +1113,45 @@ def PokerSimulation(numHands,toPrint=False):
         p.AddPlayer("Player 5")
         p.Game()
         p.ShowDown()
-        
+
         hand_order=p.getHand_order()
-        
-        
-        
+
+
+
         if hand_order==1:
             numHighcard +=1
-            
+
         elif hand_order==2:
             numOnepair +=1
-            
+
         elif hand_order==3:
             numTwopair +=1
-            
+
         elif hand_order==4:
             numThreekind +=1
-            
+
         elif hand_order==5:
             numStraight +=1
-            
+
         elif hand_order==6:
             numFlush +=1
-            
+
         elif hand_order==7:
             numFullhouse +=1
-            
+
         elif hand_order==8:
             numFourkind +=1
-            
+
         elif hand_order==9:
             numStraightflush +=1
-            
+
         elif hand_order==10:
             numRoyalflush +=1
-            
-            
-            
-            
-    
+
+
+
+
+
     if toPrint:
         print("highcards ",numHighcard)
         print("One pair",numOnepair)
@@ -1163,8 +1163,8 @@ def PokerSimulation(numHands,toPrint=False):
         print("Four of a Kind",numFourkind)
         print("straight Flush",numStraightflush)
         print("Royal Flush",numRoyalflush)
-    
-    
+
+
     a.append(numHighcard)
     a.append(numOnepair)
     a.append(numTwopair)
@@ -1175,12 +1175,12 @@ def PokerSimulation(numHands,toPrint=False):
     a.append(numFourkind)
     a.append(numStraightflush)
     a.append(numRoyalflush)
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
     return a
 
 
@@ -1202,9 +1202,9 @@ def PokerTrials(numHands,numTrials,toPrint=False):
     Straightflush=[]
     Royalflush=[]
     simu_list=[]
-    
+
     for b in range(numTrials):
-        
+
         simu_list=PokerSimulation(numHands)
         Highcard.append(simu_list[0])
         Onepair.append(simu_list[1])
@@ -1216,11 +1216,11 @@ def PokerTrials(numHands,numTrials,toPrint=False):
         Fourkind.append(simu_list[7])
         Straightflush.append(simu_list[8])
         Royalflush.append(simu_list[9])
-        
-        
-    
-    
-    
+
+
+
+
+
     meanHighcard=(sum(Highcard)/numTrials)
     meanOnepair=sum(Onepair)/numTrials
     meanTwopair=(sum(TwoPair)/numTrials)
@@ -1231,11 +1231,11 @@ def PokerTrials(numHands,numTrials,toPrint=False):
     meanFourkind=(sum(Fourkind)/numTrials)
     meanStraightflush=(sum(Straightflush)/numTrials)
     meanRoyalflush=(sum(Royalflush)/numTrials)
-    
-    
+
+
     if toPrint:
         print("Simulating",numHands,"number of poker hands ",numTrials,"times")
-        
+
         print(" HighCard Win %",(meanHighcard*100/numHands))
         print(" One Pair Win %",(meanOnepair*100/numHands))
         print(" Two Pair Win %",(meanTwopair*100/numHands))
@@ -1243,24 +1243,24 @@ def PokerTrials(numHands,numTrials,toPrint=False):
         print(" Straight Win %",(meanStraight*100/numHands))
         print(" Flush Win %",(meanFlush*100/numHands))
         print(" FullHouse Win %",(meanFullhouse*100/numHands))
-        
+
         print(" Four of a kind Win %",(meanFourkind*100/numHands))
         print(" Straight Flush  Win %",(meanStraightflush*100/numHands))
         print(" Royal Flush Win %",(meanRoyalflush*100/numHands))
-              
-        
-        
-        
-        
-        
-        
 
-        
+
+
+
+
+
+
+
+
 
 
 
 def PlayerSimul(numHands,num_player,toPrint=False):
-    
+
     numHighcard=0
     numOnepair=0
     numTwopair=0
@@ -1281,19 +1281,19 @@ def PlayerSimul(numHands,num_player,toPrint=False):
     numFourkindwin=0
     numStraightflushwin=0
     numRoyalflushwin=0
-    
-    
+
+
     a=[]
     c=[]
-    
-    
+
+
     for b in range(numHands):
         p=PokerHand()
         p.AddPlayer("DK")
         player_name="DK"
         for i in range(num_player-1):
             p.AddPlayer("Player"+str(i))
-        
+
         p.Game()
         p.ShowDown()
         poker_winner=p.getWinner()
@@ -1301,76 +1301,76 @@ def PlayerSimul(numHands,num_player,toPrint=False):
         hand_order=p.getPlayer()[0].getHand_order()
         for b in poker_winner:
             winner.append(b.getName())
-       
-        
+
+
         if player_name in winner:
             poker_hand=p.getHand_order()
             if poker_hand==1:
                 numHighcardwin +=1
-            
+
             elif poker_hand==2:
                 numOnepairwin +=1
-                
+
             elif poker_hand==3:
                 numTwopairwin +=1
-                
+
             elif poker_hand==4:
                 numThreekindwin +=1
-                
+
             elif poker_hand==5:
                 numStraightwin +=1
-                
+
             elif poker_hand==6:
                 numFlushwin +=1
             elif poker_hand==7:
                 numFullhousewin +=1
-                
+
             elif poker_hand==8:
                 numFourkindwin +=1
-                
+
             elif poker_hand==9:
                 numStraightflushwin +=1
-                
+
             elif poker_hand==10:
                 numRoyalflushwin +=1
-            
-            
-            
-        
-        
+
+
+
+
+
         if hand_order==1:
             numHighcard +=1
-            
+
         elif hand_order==2:
             numOnepair +=1
-            
+
         elif hand_order==3:
             numTwopair +=1
-            
+
         elif hand_order==4:
             numThreekind +=1
-            
+
         elif hand_order==5:
             numStraight +=1
-            
+
         elif hand_order==6:
             numFlush +=1
         elif hand_order==7:
             numFullhouse +=1
-            
+
         elif hand_order==8:
             numFourkind +=1
-            
+
         elif hand_order==9:
             numStraightflush +=1
-            
+
         elif hand_order==10:
             numRoyalflush +=1
-            
-            
-            
-            
-    
+
+
+
+
+
     if toPrint:
         print("highcards ",numHighcard)
         print("One pair",numOnepair)
@@ -1382,8 +1382,8 @@ def PlayerSimul(numHands,num_player,toPrint=False):
         print("Four of a Kind",numFourkind)
         print("straight Flush",numStraightflush)
         print("Royal Flush",numRoyalflush)
-    
-    
+
+
     a.append(numHighcard)
     a.append(numOnepair)
     a.append(numTwopair)
@@ -1394,8 +1394,8 @@ def PlayerSimul(numHands,num_player,toPrint=False):
     a.append(numFourkind)
     a.append(numStraightflush)
     a.append(numRoyalflush)
-    
-    
+
+
     c.append(numHighcardwin)
     c.append(numOnepairwin)
     c.append(numTwopairwin)
@@ -1406,31 +1406,31 @@ def PlayerSimul(numHands,num_player,toPrint=False):
     c.append(numFourkindwin)
     c.append(numStraightflushwin)
     c.append(numRoyalflushwin)
-    
-    
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
     return (a,c)
-    
-    
-    
-     
-        
-        
-    
-    
-            
-        
-        
-        
-    
-    
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
     Highcard=[]
     Onepair=[]
@@ -1454,9 +1454,9 @@ def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
     Royalflushwin=[]
     simu_list=[]
     win_list=[]
-    
+
     for b in range(numTrials):
-        
+
         simu_list,win_list=PlayerSimul(numHands,num_player)
         Highcard.append(simu_list[0])
         Onepair.append(simu_list[1])
@@ -1478,11 +1478,11 @@ def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
         Fourkindwin.append(win_list[7])
         Straightflushwin.append(win_list[8])
         Royalflushwin.append(win_list[9])
-        
-        
-    
-    
-    
+
+
+
+
+
     meanHighcard=(sum(Highcard)/numTrials)
     meanOnepair=sum(Onepair)/numTrials
     meanTwopair=(sum(TwoPair)/numTrials)
@@ -1503,9 +1503,9 @@ def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
     meanFourkindwin=(sum(Fourkindwin)/numTrials)
     meanStraightflushwin=(sum(Straightflushwin)/numTrials)
     meanRoyalflushwin=(sum(Royalflushwin)/numTrials)
-    
 
-    
+
+
     PHighcard=meanHighcardwin/meanHighcard*100
     POnepair=meanOnepairwin/meanOnepair*100
     PTwopair=meanTwopairwin/meanTwopair*100
@@ -1519,11 +1519,11 @@ def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
         PRoyalflush=meanRoyalflushwin/meanRoyalflush*100
     except ZeroDivisionError:
         PRoyalflush=100
-    
-        
-        
-        
-    
+
+
+
+
+
     Plist=[]
     Plist.append(PHighcard)
     Plist.append(POnepair)
@@ -1535,12 +1535,12 @@ def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
     Plist.append(PFourkind)
     Plist.append(PStraightflush)
     Plist.append(PRoyalflush)
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     if toPrint:
         print("Simulating",numHands,"number of poker hands ",numTrials,"times  with",num_player,"players")
         print(" The players best hand ")
@@ -1559,7 +1559,7 @@ def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
         print(" HighCard win %",(meanHighcardwin*100/numHands))
         print(" One Pair win %",(meanOnepairwin*100/numHands))
         print(" Two Pair win %",(meanTwopairwin*100/numHands))
-        
+
         print(" Three of a kind win %",(meanThreekindwin*100/numHands))
         print(" Straight win %",(meanStraightwin*100/numHands))
         print(" Flush win %",(meanFlushwin*100/numHands))
@@ -1567,34 +1567,34 @@ def PlayerSimulTrial(numHands,numTrials,num_player,toPrint):
         print(" Four of a kind win  %",(meanFourkindwin*100/numHands))
         print(" Straight Flush win %",(meanStraightflushwin*100/numHands))
         print(" Royal Flush win  %",(meanRoyalflushwin*100/numHands))
-        
+
         print("====================================")
-    
+
         print("Probability of winning given player has highcard",meanHighcardwin/meanHighcard*100)
         print("Probability of winning given player hasOne pair",meanOnepairwin/meanOnepair*100)
         print("Probability of winning given player has Two pair",meanTwopairwin/meanTwopair*100)
         print("Probability of winning given player has Three of kind",meanThreekindwin/meanThreekind*100)
-        
+
         print("Probability of winning given player has Straight",meanStraightwin/meanStraight*100)
         print("Probability of winning given player has Flush",meanFlushwin/meanFlush*100)
         print("Probability of winning given plyer has Full House",meanFullhousewin/meanFullhouse*100)
         print("Probability of winning given players has FOur of a kind",meanFourkindwin/meanFourkind*100)
         print("Probability of winning given player has Straight Flush",meanStraightflushwin/meanStraightflush*100)
         print("Probability of winning given player has Royal Flush",meanRoyalflushwin/meanRoyalflush*100)
-        
-        
-    
-    
-    
+
+
+
+
+
     return Plist
-        
-        
-        
-    
-    
-    
-    
-              
+
+
+
+
+
+
+
+
 
 
 def MultiplePlayers(numHands,numTrials):
@@ -1633,346 +1633,37 @@ def MultiplePlayers(numHands,numTrials):
      Handlist.append(Fourkind)
      Handlist.append(Straightflush)
      Handlist.append(Royalflush)
-     
-     
+
+
      for hand in Handlist:
          pylab.plot(num_player,hand,"r-")
          pylab.xlabel("Number of players")
          pylab.ylabel("Winning Probability")
          pylab.ylim(0,110)
          pylab.figure()
-     
-      
-         
-     
-     
-        
-        
-    
 
-    
 
-            
-        
-        
-    
-            
-            
-        
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 # PokerTrials(10, 100,True)
 
-PlayerSimulTrial(1000, 100, 2, True)                                                  
+PlayerSimulTrial(1000, 100, 2, True)
 # MultiplePlayers(1000, 100)
-         
-            
-     
-
-            
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-        
-    
-            
-        
-        
-        
-        
-                        
-      
-            
-                    
-                        
-                        
-                        
-            
-                    
-            
-                    
-                
-                
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-            
-        
-        
-        
-        
-       
-    
-        
-            
-            
-            
-            
-                    
-    
-        
-        
-        
-       
-                
-                    
-        
-        
-            
-            
-    
-                    
-                    
-        
-                
-                
-            
-            
-            
-            
-        
-                
-        
-        
-        
-        
-        
-    
-    
-        
-                        
-                        
-                        
-                        
-                        
-                        
-        
-                        
-        
-    
-                       
-                  
-                    
-                
-                    
-                        
-                    
-                
-            
-        
-            
-            
-            
-            
-            
-            
-        
-        
-        
-    
-        
-            
-            
-
-    
-                
-        
-
-    
-    
-    
-            
-            
-        
-        
- 
-        
-        
-        
-                
-    
-                
-        
-                
-    
-        
-        
-            
-        
-                
-        
-                
-        
-        
-    
-    
-
-       
-        
-       
-       
-        
-    
-        
-            
-            
-            
-            
-        
-    
-        
-        
-        
-        
-        
-    
-
-            
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-        
-
-        
-        
-        
-        
-        
-    
-    
-
-
-
-
-
-
-
-        
-        
-        
-    
-            
-
-        
-            
-            
-    
-            
-            
-            
-        
-            
-            
-        
-        
-        
-        
-            
-        
-
-        
-        
-        
-        
-
-        
-        
-
-                
-    
-
-        
-        
-                    
-                    
-        
-
-    
-    
-    
-
-        
-
-
-        
-          

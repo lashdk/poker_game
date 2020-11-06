@@ -5,10 +5,12 @@ Created on Tue Oct  6 11:49:47 2020
 @author: dhruv
 """
 
-import pylab
+
 import random
 import copy
 import collections
+from operator import itemgetter
+import math
 
 
 class Deal(object):
@@ -78,6 +80,7 @@ class Player():
         self.cash=cash
         self.fold_status=False
         self.all_status=False
+        self.player_pot=0
 
     def GameCard(self,Hole_card):
         self.Cards=Hole_card
@@ -113,12 +116,19 @@ class Player():
 
     def getAllStat(self):
         return self.all_status
+    
+    def getPot(self):
+        return self.player_pot
+        
 
     def All_in(self):
         self.all_status=True
 
     def addCash(self,amount):
         self.cash+=amount
+    
+    def addPot(self,amount):
+        self.player_pot+=amount
 
     def removeCash(self,amount):
         self.cash-=amount
@@ -129,8 +139,7 @@ class Player():
     def Fold(self):
         self.fold_status=True
 
-    def Raise(self,raise):
-        raise_amount=int(raise*self.cash)
+    def Raise(self,raise_amount):
         self.removeCash(raise_amount)
     def ResetHand(self):
         self.Cards={}
@@ -139,6 +148,7 @@ class Player():
         self.kicker=0
         self.fold_status=False
         self.all_status=False
+        self.player_pot=0
 
 
 
@@ -147,20 +157,20 @@ class Player():
 
 def BestHand(player_card):
 
-    self.cards=copy.deepcopy(player_card)
-    self.values=[]
-    self.suits=[]
-    for card in self.cards:
-        temp_list=self.cards[card]
-        temp_list=list(temp_list)
-        self.values.append(temp_list[0])
-        self.suits.append(temp_list[1]
-
-
-
-    def RoyalFlush(self):
-        rank=copy.deepcopy(self.values)
-        colour=copy.deepcopy(self.suits)
+    cards=copy.deepcopy(player_card)
+    values=[]
+    suits=[]
+    for card in cards:
+        temp_list=cards[card]
+        values.append(temp_list[0])
+        suits.append(temp_list[1])
+                          
+                        
+    def RoyalFlush():
+        rank=copy.deepcopy(values)
+        colour=copy.deepcopy(suits)
+        if len(rank)<5:
+            return (False,0,0,0)
         heart=[]
         diamond=[]
         spade=[]
@@ -168,8 +178,10 @@ def BestHand(player_card):
         royal_straight="1011121314"
         hand_order=0
         flush_stat=False
+        
+        
 
-        for a in range(len(self.values)):
+        for a in range(len(values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
             elif colour[a]=="Diamond":
@@ -203,76 +215,29 @@ def BestHand(player_card):
 
         return (flush_stat,hand_order,0,0)
 
-    k=RoyalFlush()
-    print(k)
+    # k=RoyalFlush()
+    # print(k)
 
 
 
-    def CheckRoyalFlush(self):
-        rank=copy.deepcopy(self.values)
-        colour=copy.deepcopy(self.suits)
+ 
+    def StraightFlush():
+        rank=copy.deepcopy(values)
+        colour=copy.deepcopy(suits)
+        if len(rank)<5:
+            return (False,0,0,0)
         heart=[]
         diamond=[]
         spade=[]
         club=[]
-        royal_straight="1011121314"
+       
+        flush_stat=False
         hand_order=0
         MaxVal=0
-        kicker=0
 
-
-
-        for a in range(len(self.values)):
-            if colour[a]=="Heart":
-                heart.append(rank[a])
-            elif colour[a]=="Diamond":
-                diamond.append(rank[a])
-            elif colour[a]=="Spade":
-                spade.append(rank[a])
-            else:
-                club.append(rank[a])
-
-        if len(heart)>=5:
-            max_colour=copy.deepcopy(heart)
-        elif len(diamond)>=5:
-            max_colour=copy.deepcopy(diamond)
-
-        elif len(spade)>=5:
-            max_colour=copy.deepcopy(spade)
-        elif len(club)>=5:
-            max_colour=copy.deepcopy(club)
-        else:
-            return False
-
-
-        max_colour.sort()
-        result_straight=""
-        for a in max_colour:
-            result_straight +=str(a)
-
-        if royal_straight in result_straight:
-            hand_order=10
-            return True
-
-
-
-
-        return False
-
-
-
-
-
-
-
-
-    def StraightFlush(self):
-        rank=copy.deepcopy(self.values)
-        colour=copy.deepcopy(self.suits)
-        heart=[]
-        diamond=[]
-        spade=[]
-        club=[]
+        
+        
+        
         normal_straight=[]
         normal_straight.append("234514")
 
@@ -287,13 +252,9 @@ def BestHand(player_card):
 
 
 
-        hand_order=0
-        MaxVal=0
-        kicker=0
+       
 
-
-
-        for a in range(len(self.values)):
+        for a in range(len(values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
             elif colour[a]=="Diamond":
@@ -313,7 +274,7 @@ def BestHand(player_card):
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
-            return (0,0,0)
+            return (flush_stat,hand_order,MaxVal,0)
 
 
         max_colour.sort()
@@ -325,243 +286,90 @@ def BestHand(player_card):
         for b in normal_straight:
             if b in result_straight:
                 hand_order=9
+                flush_stat=True
                 last_digit=int(b[-1])
                 if last_digit in (6,7,8,9):
                     MaxVal=last_digit
                 else:
                     last_digit +=10
                     MaxVal=last_digit
+                break
+                
+        return (flush_stat,hand_order,MaxVal,0)
+    
+    # k=StraightFlush()
+    # print(k)
 
 
-
-
-
-
-        return (hand_order,MaxVal,kicker)
-
-
-
-    def CheckStraightFlush(self):
-        rank=copy.deepcopy(self.values)
-        colour=copy.deepcopy(self.suits)
-        heart=[]
-        diamond=[]
-        spade=[]
-        club=[]
-        normal_straight=[]
-        normal_straight.append("234514")
-
-        for i in range(2,14):
-            result=""
-            if i+5<15:
-
-                for j in range(5):
-                    result +=str(i+j)
-                normal_straight.append(result)
-
-
-
-
+    def FourKind():
+        rank=copy.deepcopy(values)
+        if len(rank)<5:
+            return (False,0,0,0)
         hand_order=0
         MaxVal=0
         kicker=0
+        four_kind_stat=False
+        
+        count=collections.Counter(rank)
+        
+        for key in count:
+            if count[key]==4:
+                hand_order=8
+                MaxVal=key
+                four_kind_stat=True
+        
+        if hand_order==8:
+            for i in range(4):
+                rank.remove(MaxVal)
+            kicker=max(rank)
 
 
 
-        for a in range(len(self.values)):
-            if colour[a]=="Heart":
-                heart.append(rank[a])
-            elif colour[a]=="Diamond":
-                diamond.append(rank[a])
-            elif colour[a]=="Spade":
-                spade.append(rank[a])
-            else:
-                club.append(rank[a])
-
-        if len(heart)>=5:
-            max_colour=copy.deepcopy(heart)
-        elif len(diamond)>=5:
-            max_colour=copy.deepcopy(diamond)
-
-        elif len(spade)>=5:
-            max_colour=copy.deepcopy(spade)
-        elif len(club)>=5:
-            max_colour=copy.deepcopy(club)
-        else:
-            return False
+        return (four_kind_stat,hand_order,MaxVal,kicker)
+    
+    # k=FourKind()
+    # print(k)
 
 
-        max_colour.sort()
-        result_straight=""
-        for a in max_colour:
-            result_straight +=str(a)
-
-
-        for b in normal_straight:
-            if b in result_straight:
-                hand_order=9
-                last_digit=int(b[-1])
-                return True
-                if last_digit in (6,7,8,9):
-                    MaxVal=last_digit
-                else:
-                    last_digit +=10
-                    MaxVal=last_digit
-
-
-
-
-
-
-        return False
-
-
-    def FourKind(self):
-        rank=copy.deepcopy(self.values)
-        max_times=0
-        card_value=0
+    def FullHouse():
+        rank=copy.deepcopy(values)
+        if len(rank)<5:
+            return (False,0,0,0)
         hand_order=0
         MaxVal=0
-        kicker=0
-        for a in rank:
-            times=rank.count(a)
-            if times>=max_times:
-                max_times=times
-                card_value=a
-
-        if max_times==4:
-            hand_order=8
-            MaxVal=card_value
-        else:
-            return (0,0,0)
-
-        for i in range(4):
-            rank.remove(MaxVal)
-
-        rank.sort()
-        kicker=rank[-1]
-
-
-
-        return (hand_order,MaxVal,kicker)
-
-
-
-    def CheckFourKind(self):
-        rank=copy.deepcopy(self.values)
-        max_times=0
-        card_value=0
-        hand_order=0
-        MaxVal=0
-        kicker=0
-        for a in rank:
-            times=rank.count(a)
-            if times>=max_times:
-                max_times=times
-                card_value=a
-
-        if max_times==4:
-            hand_order=8
-            MaxVal=card_value
-            return True
-        else:
-            return False
-
-
-
-
-
-
-
-
-    def FullHouse(self):
-        rank=copy.deepcopy(self.values)
-        max_times=0
-        card_value=0
-        hand_order=0
-        MaxVal=0
-        pair=0
         kicker=0
         count=collections.Counter(rank)
-
+        three_kind_stat=False
+    
+        full_house_stat=False
+        
         for key in count:
-            if count[key]>max_times:
-                max_times=count[key]
-                card_value=key
-            elif count[key]==max_times:
-                if key>card_value:
-                    card_value=key
-
-
-
-
-
-
-
-        if max_times==3:
-
-
+            if count[key]==3:
+                three_kind_stat=True
+                if key>MaxVal:
+                    MaxVal=key
+        
+        
+        if three_kind_stat:
+            count.pop(MaxVal)
             for key in count:
-                if key!=card_value:
-                    if count[key]>=2 and key>pair:
-                        pair=key
+                    if count[key]>=2 and key>kicker:
+                        kicker=key
                         hand_order=7
-                        MaxVal=card_value
-                        kicker=pair
+                        full_house_stat=True
 
 
-        else:
-            return(0,0,0)
+        return (full_house_stat,hand_order,MaxVal,kicker)
+    
+    # k=FullHouse()
+    # print(k)
 
 
-        return (hand_order,MaxVal,kicker)
-
-
-    def CheckFullHouse(self):
-        rank=copy.deepcopy(self.values)
-        max_times=0
-        card_value=0
-        hand_order=0
-        MaxVal=0
-        pair=0
-        kicker=0
-        count=collections.Counter(rank)
-
-        for key in count:
-            if count[key]>max_times:
-                max_times=count[key]
-                card_value=key
-            elif count[key]==max_times:
-                if key>card_value:
-                    card_value=key
-
-        if max_times==3:
-
-
-            for key in count:
-                if key!=card_value:
-                    if count[key]>=2 and key>pair:
-                        pair=key
-                        hand_order=7
-                        MaxVal=card_value
-                        kicker=pair
-                        return True
-
-        return False
-
-
-
-
-
-
-
-
-
-
-
-    def Flush(self):
-        rank=copy.deepcopy(self.values)
-        colour=copy.deepcopy(self.suits)
+    def Flush():
+        rank=copy.deepcopy(values)
+        colour=copy.deepcopy(suits)
+        if len(rank)<5:
+            return (False,0,0,0)
         heart=[]
         diamond=[]
         spade=[]
@@ -569,11 +377,10 @@ def BestHand(player_card):
 
         hand_order=0
         MaxVal=0
-        kicker=0
+        flush_stat=False
+        
 
-
-
-        for a in range(len(self.values)):
+        for a in range(len(values)):
             if colour[a]=="Heart":
                 heart.append(rank[a])
             elif colour[a]=="Diamond":
@@ -593,75 +400,28 @@ def BestHand(player_card):
         elif len(club)>=5:
             max_colour=copy.deepcopy(club)
         else:
-            return (0,0,0)
-
-
-        max_colour.sort()
+            return (flush_stat,hand_order,MaxVal,0)
+        
+        
+        flush_stat=True
         hand_order=6
-        MaxVal=max_colour[-1]
+        MaxVal=max(max_colour)
+        return (flush_stat,hand_order,MaxVal,0)
+    
+    # k=Flush()
+    # print(k)
 
 
-
-
-
-        return (hand_order,MaxVal,kicker)
-
-
-    def CheckFlush(self):
-        rank=copy.deepcopy(self.values)
-        colour=copy.deepcopy(self.suits)
-        heart=[]
-        diamond=[]
-        spade=[]
-        club=[]
-
+    
+        
+    def Straight():
+        rank=copy.deepcopy(values)
+        if len(rank)<5:
+            return (False,0,0,0)
         hand_order=0
-        MaxVal=0
-        kicker=0
-
-
-
-        for a in range(len(self.values)):
-            if colour[a]=="Heart":
-                heart.append(rank[a])
-            elif colour[a]=="Diamond":
-                diamond.append(rank[a])
-            elif colour[a]=="Spade":
-                spade.append(rank[a])
-            else:
-                club.append(rank[a])
-
-        if len(heart)>=5:
-            max_colour=copy.deepcopy(heart)
-        elif len(diamond)>=5:
-            max_colour=copy.deepcopy(diamond)
-
-        elif len(spade)>=5:
-            max_colour=copy.deepcopy(spade)
-        elif len(club)>=5:
-            max_colour=copy.deepcopy(club)
-        else:
-            return False
-
-
-        max_colour.sort()
-        hand_order=6
-        MaxVal=max_colour[-1]
-
-
-
-
-
-        return True
-
-
-
-    def Straight(self):
-        rank=copy.deepcopy(self.values)
-        hand_order=0
-        kicker=0
         MaxVal=0
         straight=[]
+        straight_stat=False
         straight.append("234514")
         for i in range(1,10):
             result=""
@@ -670,6 +430,7 @@ def BestHand(player_card):
                 for j in range(1,6):
                     result +=str(i+j)
                 straight.append(result)
+       
 
 
 
@@ -678,143 +439,79 @@ def BestHand(player_card):
         for i in rank:
             if i not in unique_rank:
                 unique_rank.append(i)
+        
+        if len(unique_rank)>=5:
+            
 
-        unique_rank.sort()
-        result=""
-        for a in unique_rank:
-            result +=str(a)
-
-
-        for b in straight:
-            if b in result:
-                hand_order=5
-                last_digit=int(b[-1])
-                if last_digit in (6,7,8,9):
-                    MaxVal=last_digit
-                else:
-                    last_digit +=10
-                    MaxVal=last_digit
-
-
-
-        return (hand_order,MaxVal,kicker)
-
-    def CheckStraight(self):
-        rank=copy.deepcopy(self.values)
-        hand_order=0
-        kicker=0
-        MaxVal=0
-        straight=[]
-        straight.append("234514")
-        for i in range(1,10):
+            unique_rank.sort()
+            unique_rank=unique_rank[-5:]
             result=""
-            if i+5<15:
-
-                for j in range(1,6):
-                    result +=str(i+j)
-                straight.append(result)
-
-
-
-
-        unique_rank=[]
-        for i in rank:
-            if i not in unique_rank:
-                unique_rank.append(i)
-
-        unique_rank.sort()
-        result=""
-        for a in unique_rank:
-            result +=str(a)
-
-
-        for b in straight:
-            if b in result:
-                hand_order=5
-                last_digit=int(b[-1])
-                if last_digit in (6,7,8,9):
-                    MaxVal=last_digit
-                else:
-                    last_digit +=10
-                    MaxVal=last_digit
-
-                return True
-
-
-        return False
+            for a in unique_rank:
+                result +=str(a)
+          
+    
+    
+            for b in straight:
+                if b in result:
+                    hand_order=5
+                    last_digit=int(b[-1])
+                    if last_digit in (6,7,8,9):
+                        MaxVal=last_digit
+                    else:
+                        last_digit +=10
+                        MaxVal=last_digit
+                    straight_stat=True
+                    break
 
 
 
-    def ThreeKind(self):
-        rank=copy.deepcopy(self.values)
-        max_times=0
-        card_value=0
+        return (straight_stat,hand_order,MaxVal,0)
+    
+    # k=Straight()
+    # print(k)
+
+  
+    def ThreeKind():
+        rank=copy.deepcopy(values)
+        if len(rank)<3:
+            return (False,0,0,0)
         hand_order=0
         MaxVal=0
         kicker1=0
         kicker2=0
         kicker=0
         count=collections.Counter(rank)
-
+        three_stat=False
+        
         for key in count:
-            if count[key]>max_times:
-                max_times=count[key]
-                card_value=key
-            elif count[key]==max_times:
-                if key>card_value:
-                    card_value=key
+            if count[key]==3:
+                three_stat=True
+                if key>MaxVal:
+                    MaxVal=key
+        
 
-        if max_times==3:
+        if three_stat:
             for a in range(3):
-                rank.remove(card_value)
-
+                rank.remove(MaxVal)
             rank.sort()
             hand_order=4
-            MaxVal=card_value
             kicker1=rank[-1]
             kicker2=rank[-2]
             kicker=int(str(kicker1)+str(kicker2))
 
 
 
-        return (hand_order,MaxVal,kicker)
-
-    def CheckThreeKind(self):
-        rank=copy.deepcopy(self.values)
-        max_times=0
-        card_value=0
-        hand_order=0
-        MaxVal=0
-        kicker=0
-        count=collections.Counter(rank)
-
-        for key in count:
-            if count[key]>max_times:
-                max_times=count[key]
-                card_value=key
-            elif count[key]==max_times:
-                if key>card_value:
-                    card_value=key
-
-        if max_times==3:
-
-            for a in range(3):
-                rank.remove(card_value)
-
-            rank.sort()
-            hand_order=4
-            MaxVal=card_value
-            kicker=rank[-1]
-            return True
-        else:
-            return False
+        return (three_stat,hand_order,MaxVal,kicker)
+    
+    # k=ThreeKind()
+    # print(k)
+    
 
 
-
-
-
-    def TwoPair(self):
-        rank=copy.deepcopy(self.values)
+    def TwoPair():
+        rank=copy.deepcopy(values)
+        if len(rank)<4:
+            return (False,0,0,0)
         count=collections.Counter(rank)
         hand_order=0
         MaxVal=0
@@ -822,6 +519,7 @@ def BestHand(player_card):
         kicker1=0
         kicker2=0
         pairs=[]
+        two_stat=False
 
         for key in count:
             if count[key]==2:
@@ -829,7 +527,7 @@ def BestHand(player_card):
 
 
         if len(pairs)>=2:
-
+            two_stat=True
             pairs.sort()
             pairs=pairs[-2:]
             MaxVal=max(pairs)
@@ -842,55 +540,19 @@ def BestHand(player_card):
 
             kicker2=max(rank)
             kicker=int(str(kicker1)+str(kicker2))
-        else:
-            return(0,0,0)
+
+
+        return (two_stat,hand_order,MaxVal,kicker)
+    
+    # k=TwoPair()
+    # print(k)
 
 
 
 
-        return (hand_order,MaxVal,kicker)
 
-
-
-    def CheckTwoPair(self):
-        rank=copy.deepcopy(self.values)
-        count=collections.Counter(rank)
-
-        hand_order=0
-        MaxVal=0
-        kicker1=0
-        kicker2=0
-        pairs=[]
-
-        for key in count:
-            if count[key]==2:
-                pairs.append(key)
-
-
-        if len(pairs)>=2:
-
-            return True
-            pairs.sort()
-            pairs=pairs[-2:]
-            MaxVal=max(pairs)
-            kicker1=pairs[0]
-            hand_order=3
-
-            for a in pairs:
-                for b in range(2):
-                    rank.remove(a)
-
-            kicker2=max(rank)
-
-
-
-
-        return False
-
-
-
-    def OnePair(self):
-        rank=copy.deepcopy(self.values)
+    def OnePair():
+        rank=copy.deepcopy(values)
         count=collections.Counter(rank)
         hand_order=0
         MaxVal=0
@@ -899,22 +561,20 @@ def BestHand(player_card):
         kicker2=0
         kicker3=0
         pairs=[]
+        pair_stat=False
 
         for key in count:
             if count[key]==2:
                 pairs.append(key)
 
         if len(pairs)==1:
-
-            pairs.sort()
-            pairs=pairs[-1:]
-            MaxVal=max(pairs)
-
+            pair_stat=True
             hand_order=2
+            MaxVal=pairs[0]
 
-            for a in pairs:
-                for b in range(2):
-                    rank.remove(a)
+
+            for b in range(2):
+                rank.remove(MaxVal)
             rank.sort()
             kicker1=rank[-1]
             kicker2=rank[-2]
@@ -924,48 +584,15 @@ def BestHand(player_card):
 
 
 
-        return (hand_order,MaxVal,kicker)
-
-
-
-    def CheckOnePair(self):
-        rank=copy.deepcopy(self.values)
-        count=collections.Counter(rank)
-        hand_order=0
-        MaxVal=0
-        kicker1=0
-        kicker2=0
-        kicker3=0
-        pairs=[]
-
-        for key in count:
-            if count[key]==2:
-                pairs.append(key)
-
-        if len(pairs)==1:
-            return True
-            pairs.sort()
-            pairs=pairs[-1:]
-            MaxVal=max(pairs)
-
-            hand_order=2
-
-            for a in pairs:
-                for b in range(2):
-                    rank.remove(a)
-            rank.sort()
-            kicker1=rank[-1]
-            kicker2=rank[-2]
-            kicker3=rank[-3]
+        return (pair_stat,hand_order,MaxVal,kicker)
+    # k=OnePair()
+    # print(k)
 
 
 
 
-        return False
-
-
-    def HighCard(self):
-        rank=copy.deepcopy(self.values)
+    def HighCard():
+        rank=copy.deepcopy(values)
         hand_order=1
         rank.sort()
         kicker=0
@@ -976,7 +603,387 @@ def BestHand(player_card):
         kicker4=rank[-5]
         kicker=int(str(kicker1)+str(kicker2)+str(kicker3)+str(kicker4))
 
+        return (True,hand_order,MaxVal,kicker)
+    # k=OnePair()
+    # print(k)
+    
+
+    k=RoyalFlush()
+    # print(k)
+    if not k[0]:
+        k=StraightFlush()
+    
+    if not k[0]:
+        k=FourKind()
+        
+    if not k[0]:
+        k=FullHouse()
+        
+    if not k[0]:
+        k=Flush()
+
+    if not k[0]:
+        k=Straight()
+        
+    if not k[0]:
+        k=ThreeKind()
+        
+    if not k[0]:
+        k=TwoPair()
+        
+    if not k[0]:
+        k=OnePair()
+    if not k[0]:
+        k=HighCard()
+        
+    
+    return k[1:]
+
+
+class poker_table():
+    def __init__(self,players,dealer,big_blind,small_blind):
+        self.players=players
+        self.big_blind=big_blind
+        self.small_blind=small_blind
+        self.dealer=dealer
+        self.pot=0
+        self.call=0
+        self.big_pos=0
+        self.small_pos=1
+        self.active_index=self.small_pos
+    
+    def update_blind(self):
+        self.big_pos+=1
+        self.small_pos+=1
+        if self.big_pos>=len(self.players):
+            self.big_pos=0
+            
+        if self.small_blind>=len(self.players):
+            self.small_blind=0
+    def add_player(self,player):
+        self.players.append(player)
+    
+    def remove_player(self,player):
+        self.players.remove(player)
+    
+    def check_fold_stat(self,player_index):
+        return self.players[player_index].getFoldStat()
+    
+    def check_all_in_stat(self,player):
+        return self.players[player_index].getAllStat()
+    
+    def set_big_blind(self,amount):
+        self.big_blind=amount
+    
+    def set_small_blind(self,amount):
+        self.small_blind=amount
+    
+    def blind_if_player_removed(self):
+        self.small_pos=random.randint(0, len(self.players)-1)
+        self.big_pos=self.small_pos+1
+    
+    def showdown(self):
+        show=[]
+        for player in self.players:
+            if not player.getFoldStat:
+                com_card=self.dealer.GetComCard()
+                player_card=player.getCards()
+                best_list=BestHand({**player_card,**com_card})
+                best_list=list(best_list)
+                player_index=self.players.index(player)
+                best_list.append(player_index)
+                show.append(best_list)
+        
+        show_sort=sorted(show,reverse=True,key=itemgetter(0,1,2))
+        
+        hand_list=[]
+        max_hand=show_sort[0][0]
+        for item in show_sort:
+            if max_hand==item[0]:
+                hand_list.append(item)
+        
+        if len(hand_list)!=1:
+            val_list=[]
+            max_val=hand_list[0][1]
+            for item in hand_list:
+                if max_val==item[1]:
+                    val_list.append(item)
+            
+            if len(val_list)!=1:
+                kick_list=[]
+                max_kick=val_list[0][2]
+                for item in val_list:
+                    if max_kick==item[2]:
+                        kick_list.append(item)
+                winners=kick_list
+            else:
+                winners=val_list
+        else:
+            winners=hand_list
+        
+        winner_index=[]
+        for item in winners:
+            winner_index.append(item[3])
+        
+        return winner_index
+    
+    def reset_table(self):
+        self.pot=0
+        self.call=0
+        self.active_index=self.small_pos
+        
+        for player in self.players:
+            player.ResetHand()
+        
+        self.dealer.DeckReset()
+    
+    def pot_winner(self,winner_index):
+        l=len(winner_index)
+        
+        pot_share=math.floor(self.pot/l)
+        
+        for index in winner_index:
+            self.player[index].addCash(pot_share)
+    
+    def place_blinds(self):
+        self.players[self.big_pos].removeCash(self.big_blind)
+        self.players[self.small_pos].removeCash(self.small_blind)
+        self.players[self.big_pos].addPot(self.big_blind)
+        self.players[self.small_pos].addPot(self.small_blind)
+        amt=self.small_blind+self.big_blind
+        self.add_pot(amt)
+        
+    
+    def active_player_update(self):
+        self.active_index+=1
+        if self.active_index>=len(self.players):
+            self.active_index=0
+    
+    def add_pot(self,amount):
+        self.pot+=amount
+    
+    
+    def action_logic(self,player_index):
+        
+        action_dict={"fold":True,"check":False,"match_bet":False,"raise_bet":True,"all_in":True}
+        
+        
+        
+        player_pot=self.players[player_index].getPot()
+        
+        if self.call>player_pot:
+            action_dict["match_bet"]=True
+            
+        elif self.call==player_pot:
+            action_dict["check"]=True
+        
+       
+        legal_action=True
+        while legal_action:
+            for action in action_dict:
+                if action_dict[action]:
+                    print(str(action),end=" ")
+    
+            taken=str(input("Choose a suitable action")).lower()
+            
+            if action_dict[taken]:
+                legal_action=False
+            else:
+                print("action not allowed")
+        
+        return taken
+            
+        
+    
+    
+    def action(self,input_action,player_index):
+        input_action=input_action.lower()
+        
+        player_pot=self.players[player_index].getPot()
+        player_cash=self.players[player_index].getCash()
+        
+        
+        if input_action=="fold":
+            self.players[player_index].Fold()
+            
+        elif input_action=="match_bet":
+            amount=self.call-player_pot
+            if amount<player_cash:
+                self.players[player_index].Call(amount)
+                self.players[player_index].addPot(amount)
+                self.add_pot(amount)
+            elif amount>=player_cash:
+                self.players[player_index].Call(player_cash)
+                self.players[player_index].All_in()
+                self.players[player_index].addPot(player_cash)
+                self.add_pot(player_cash)
+                
+        
+        elif input_action=="all_in":
+            self.players[player_index].Call(player_cash)
+            self.players[player_index].addPot(player_cash)
+            self.players[player_index].All_in()
+            self.add_pot(player_cash)
+        
+            
+            
+        elif input_action=="raise_bet":
+            raise_amount=int(input("cash to be raised"))
+            if raise_amount<player_cash:
+                self.players[player_index].Call(raise_amount)
+                self.players[player_index].addPot(raise_amount)
+                self.add_pot(raise_amount)
+            else:
+                self.players[player_index].Call(player_cash)
+                self.players[player_index].All_in()
+                self.players[player_index].addPot(player_cash)
+                self.add_pot(player_cash)
+    
+    def play_game(self):
+        
+        self.dealer.DealHoles(self.players)
+        self.place_blinds()
+        self.call=self.big_blind
+        match_pot_stat=False
+        while not match_pot_stat:
+           fold_stat=self.getFoldStat(self.active_index)
+           
+           if not fold_stat:
+               
+               all_stat=self.getAllStat(self.active_index)
+               
+               if not all_stat:
+                   action=self.action_logic(self.active_index)
+                   self.action(action,self.active_index)
+        
+           self.active_player_update() 
+           ???
+        
+        
+            
+                   
+                   
+               
+           
+           
+            
+            
+            
+            
+            
+            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
+                
+            
+        
+        
+                
+            
+            
+            
+            
+            
+            
+            
+            
+        
+        
+        
+            
+        
+        
+        
+        
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+     
+                
+        
+            
+                
+        
+        
+        
+        
+        
+        
+        
+                
+            
+                
+                
+                
+                
+    
+        
+        
+        
+        
+            
+
+    
 
 
 
-        return (hand_order,MaxVal,kicker)
+
+
+
+
+        
+        
+    
+    
+    
+    
+        
+
+
+    
+    
+    
+    
+    
+    
+    
+    

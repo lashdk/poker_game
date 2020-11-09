@@ -639,18 +639,19 @@ def BestHand(player_card):
     
     return k[1:]
 
-
+### use an active player list of player indexes instead of checking for each player in a loop???
 class poker_table():
     def __init__(self,players,dealer,big_blind,small_blind):
         self.players=players
         self.big_blind=big_blind
         self.small_blind=small_blind
-        self.dealer=dealer
+        self.dealedealer
         self.pot=0
         self.call=0
         self.big_pos=0
         self.small_pos=1
-        self.active_index=self.small_pos
+        self.active_index=0
+        self.active_player_count=len(self.players)
     
     def update_blind(self):
         self.big_pos+=1
@@ -669,7 +670,7 @@ class poker_table():
     def check_fold_stat(self,player_index):
         return self.players[player_index].getFoldStat()
     
-    def check_all_in_stat(self,player):
+    def check_all_in_stat(self,player_index):
         return self.players[player_index].getAllStat()
     
     def set_big_blind(self,amount):
@@ -731,6 +732,7 @@ class poker_table():
         self.pot=0
         self.call=0
         self.active_index=self.small_pos
+        self.active_player_count=len(self.players)
         
         for player in self.players:
             player.ResetHand()
@@ -744,6 +746,8 @@ class poker_table():
         
         for index in winner_index:
             self.player[index].addCash(pot_share)
+        
+        self.reset_table()
     
     def place_blinds(self):
         self.players[self.big_pos].removeCash(self.big_blind)
@@ -805,6 +809,8 @@ class poker_table():
         
         if input_action=="fold":
             self.players[player_index].Fold()
+            self.active_player_count-=1
+            
             
         elif input_action=="match_bet":
             amount=self.call-player_pot
@@ -824,6 +830,8 @@ class poker_table():
             self.players[player_index].addPot(player_cash)
             self.players[player_index].All_in()
             self.add_pot(player_cash)
+            updated_pot=self.players[player_index].getPot()
+            self.call=max(self.call,updated_pot)
         
             
             
@@ -833,31 +841,124 @@ class poker_table():
                 self.players[player_index].Call(raise_amount)
                 self.players[player_index].addPot(raise_amount)
                 self.add_pot(raise_amount)
+        
             else:
                 self.players[player_index].Call(player_cash)
                 self.players[player_index].All_in()
                 self.players[player_index].addPot(player_cash)
                 self.add_pot(player_cash)
+            
+            
+            updated_pot=self.players[player_index].getPot()
+            self.call=max(self.call,updated_pot)
+      
+            
+     
+        
+    def check_last_man(self):
+        if self.active_player_count==1:
+            return True
+        else:
+            return False
     
-    def play_game(self):
+    def pot_last_man(self):
+        for player in self.players:
+            if not player.getFoldStat():
+                return self.players.index(player)
+            
+            
+            
+    
+    def check_equal_bet_stat(self):
+        for player in self.players:
+            if not player.getFoldStat():
+                if not player.getAllStat():
+                    player_pot=player.getPot()
+                    
+                    if player_pot!=self.call:
+                        return False
+        return True
         
-        self.dealer.DealHoles(self.players)
-        self.place_blinds()
-        self.call=self.big_blind
-        match_pot_stat=False
-        while not match_pot_stat:
-           fold_stat=self.getFoldStat(self.active_index)
+    
+    
+    
+    
+    def check_player_part_stat(self,player_count):
+        if player_count>=self.active_player_count:
+            return True
+        else:
+            return False
+    
+        
+        
+        
+    
+    
+    
+    def betting_round(self,start_index):
+        
+        self.active_index=start_index
+        player_part_stat=False
+        
+        equal_bet_stat=False
+        
+        player_count=0
+        
+        while not player_part_stat and not equal_bet_stat:
+            last_man_stat=self.check_last_man()
+            
+            if last_man_stat:
+                winner_index=self.pot_last_man()
+                self.pot_winner(winner_index)
+                break
+            
+            else:
+            
+                
+                fold_stat=self.check_fold_stat(self.active_index)
+                if not fold_stat:
+                   player_count+=1
+                   all_stat=self.check_all_in_stat(self.active_index)
+                   
+                   if not all_stat:
+                       action=self.action_logic(self.active_index)
+                       self.action(action,self.active_index)
+                
+                
+                self.active_player_update()
+                player_part_stat=self.check_player_part_stat(player_count)
+                
+                equal_bet_stat=self.check_equal_bet_stat()
+            
+            
+        
+        
+        
+        
+        
+        
+    
+    # def play_game(self):
+        
+    #     self.dealer.DealHoles(self.players)
+    #     self.place_blinds()
+    #     self.call=self.big_blind
+    #     match_pot_stat=False
+    #     while not match_pot_stat:
+    #        fold_stat=self.getFoldStat(self.active_index)
            
-           if not fold_stat:
+    #        if not fold_stat:
                
-               all_stat=self.getAllStat(self.active_index)
+    #            all_stat=self.getAllStat(self.active_index)
                
-               if not all_stat:
-                   action=self.action_logic(self.active_index)
-                   self.action(action,self.active_index)
+    #            if not all_stat:
+    #                action=self.action_logic(self.active_index)
+    #                self.action(action,self.active_index)
         
-           self.active_player_update() 
-           ???
+    #        self.active_player_update() 
+    #        ???
+         
+            
         
         
             

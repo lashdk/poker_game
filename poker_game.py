@@ -649,18 +649,23 @@ class poker_table():
         self.pot=0
         self.call=0
         self.big_pos=0
-        self.small_pos=1
+        self.small_pos=0
         self.active_index=0
         self.active_player_count=len(self.players)
+        self.dealer=0
     
-    def update_blind(self):
-        self.big_pos+=1
-        self.small_pos+=1
-        if self.big_pos>=len(self.players):
-            self.big_pos=0
-            
-        if self.small_blind>=len(self.players):
-            self.small_blind=0
+    def set_blind_pos(self):
+        small_blind=self.dealer+1
+        if small_blind>=len(self.players):
+            small_blind=0
+        
+        big_blind=small_blind+1
+        if big_blind>=len(self.players):
+            big_blind=0
+        
+        self.small_pos=small_blind
+        self.big_pos=big_blind
+
     def add_player(self,player):
         self.players.append(player)
     
@@ -680,8 +685,7 @@ class poker_table():
         self.small_blind=amount
     
     def blind_if_player_removed(self):
-        self.small_pos=random.randint(0, len(self.players)-1)
-        self.big_pos=self.small_pos+1
+        self.dealer=random.randint(0, len(self.players)-1)
     
     def showdown(self):
         show=[]
@@ -891,8 +895,6 @@ class poker_table():
     
         
         
-        
-    
     
     
     def betting_round(self,start_index):
@@ -929,13 +931,50 @@ class poker_table():
                 player_part_stat=self.check_player_part_stat(player_count)
                 
                 equal_bet_stat=self.check_equal_bet_stat()
+    
+    def first_round(self,start_index):
+        self.betting_round(start_index)
+        self.dealer.DealFlopCards()
+    
+    def second_round(self,start_index):
+        self.betting_round(start_index)
+        self.dealer.DealFourth()
+    
+    def third_round(self,start_index):
+        self.betting_round(start_index)
+        self.dealer.DealFifth()
+    
+    def fourth_round(self,start_index):
+        self.betting_round(start_index)
+        winner_index=self.showdown()
+        self.pot_winner(winner_index)
+        
+    
+    def find_start_index(self):
+        start_index_stat=False
+        
+        start_index=self.dealer
+        while not start_index_stat:
+            start_index+=1
+            if start_index>=len(self.players):
+                start_index=0
+            
+            player_stat=self.check_fold_stat(start_index)
+            
+            if not player_stat:
+                start_index_stat=True
+        
+        return start_index
+                
             
             
         
         
+    
+    
         
         
-        
+
         
     
     # def play_game(self):

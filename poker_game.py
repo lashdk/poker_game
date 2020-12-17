@@ -19,7 +19,7 @@ class Deal(object):
         self.ranks=("2","3","4","5","6","7","8","9",'10','11','12','13',"14")
         self.suits=('Heart','Diamond','Club',"Spade")
         self.ComCard={}
-        i=2
+        i=2 
         for rank in self.ranks:
             for suit in self.suits:
                 self.CardDeck[rank+suit]=[]
@@ -64,8 +64,8 @@ class Deal(object):
 
 
 #####test####
-p=Deal().GetComCard()
-print(p)
+# p=Deal().GetComCard()
+# print(p)
 ##test#####
 
 
@@ -111,6 +111,7 @@ class Player():
 
     def getCash(self):
         return self.cash
+    
     def getFoldStat(self):
         return self.fold_status
 
@@ -141,6 +142,7 @@ class Player():
 
     def Raise(self,raise_amount):
         self.removeCash(raise_amount)
+        
     def ResetHand(self):
         self.Cards={}
         self.Hand_order=0
@@ -645,7 +647,7 @@ class poker_table():
         self.players=players
         self.big_blind=big_blind
         self.small_blind=small_blind
-        self.dealedealer
+        self.deal=dealer
         self.pot=0
         self.call=0
         self.big_pos=0
@@ -653,6 +655,7 @@ class poker_table():
         self.active_index=0
         self.active_player_count=len(self.players)
         self.dealer=0
+        self.game_end_stat=False
     
     def set_blind_pos(self):
         small_blind=self.dealer+1
@@ -690,8 +693,8 @@ class poker_table():
     def showdown(self):
         show=[]
         for player in self.players:
-            if not player.getFoldStat:
-                com_card=self.dealer.GetComCard()
+            if not player.getFoldStat():
+                com_card=self.deal.GetComCard()
                 player_card=player.getCards()
                 best_list=BestHand({**player_card,**com_card})
                 best_list=list(best_list)
@@ -737,11 +740,13 @@ class poker_table():
         self.call=0
         self.active_index=self.small_pos
         self.active_player_count=len(self.players)
+        self.dealer+=1
+        self.game_end_stat=False
         
         for player in self.players:
             player.ResetHand()
         
-        self.dealer.DeckReset()
+        self.deal.DeckReset()
     
     def pot_winner(self,winner_index):
         l=len(winner_index)
@@ -750,7 +755,7 @@ class poker_table():
         
         for index in winner_index:
             self.player[index].addCash(pot_share)
-        
+        self.game_end_stat=True
         self.reset_table()
     
     def place_blinds(self):
@@ -787,6 +792,7 @@ class poker_table():
         
        
         legal_action=True
+        self.print_player_detail(player_index)
         while legal_action:
             for action in action_dict:
                 if action_dict[action]:
@@ -934,15 +940,15 @@ class poker_table():
     
     def first_round(self,start_index):
         self.betting_round(start_index)
-        self.dealer.DealFlopCards()
+        self.deal.DealFlopCards()
     
     def second_round(self,start_index):
         self.betting_round(start_index)
-        self.dealer.DealFourth()
+        self.deal.DealFourth()
     
     def third_round(self,start_index):
         self.betting_round(start_index)
-        self.dealer.DealFifth()
+        self.deal.DealFifth()
     
     def fourth_round(self,start_index):
         self.betting_round(start_index)
@@ -965,6 +971,26 @@ class poker_table():
                 start_index_stat=True
         
         return start_index
+    
+    def print_player_detail(self,index):
+        player_card=self.players[index].getCards()
+        player_card=list(player_card.keys())
+        player_name=self.players[index].getName()
+        player_cash=self.players[index].getCash()
+        com_card=self.deal.GetComCard()
+        com_card=list(com_card.keys())
+        
+        print("-----------------------------------------------")
+        print("Player name: "+str(player_name))
+        print('Player Available Cash '+str(player_cash))
+        print('Hole Cards')
+        print(player_card)
+        print('Community Cards')
+        print(com_card)
+        print("------------------------------------------------")
+        
+        
+
                 
             
             
@@ -977,26 +1003,33 @@ class poker_table():
 
         
     
-    # def play_game(self):
+    def play_game(self):
         
-    #     self.dealer.DealHoles(self.players)
-    #     self.place_blinds()
-    #     self.call=self.big_blind
-    #     match_pot_stat=False
-    #     while not match_pot_stat:
-    #        fold_stat=self.getFoldStat(self.active_index)
-           
-    #        if not fold_stat:
-               
-    #            all_stat=self.getAllStat(self.active_index)
-               
-    #            if not all_stat:
-    #                action=self.action_logic(self.active_index)
-    #                self.action(action,self.active_index)
+        self.deal.DealHoles(self.players)
+        self.place_blinds()
+        self.call=self.big_blind
         
-    #        self.active_player_update() 
-    #        ???
-         
+        
+        start_index=self.find_start_index()
+        self.first_round()
+        
+        if not self.game_end_stat:
+            start_index=self.find_start_index()
+            self.second_round(start_index)
+        
+        if not self.game_end_stat:
+            start_index=self.find_start_index()
+            self.third_round(start_index)
+            
+        if not self.game_end_stat:
+            start_index=self.find_start_index()
+            self.fourth_round(start_index)
+            
+            
+            
+        
+        
+        
             
         
         

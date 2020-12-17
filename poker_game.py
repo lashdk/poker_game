@@ -993,15 +993,6 @@ class poker_table():
 
                 
             
-            
-        
-        
-    
-    
-        
-        
-
-        
     
     def play_game(self):
         

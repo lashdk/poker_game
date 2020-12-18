@@ -752,9 +752,12 @@ class poker_table():
         l=len(winner_index)
         
         pot_share=math.floor(self.pot/l)
+        print('---------------------------------')
+        
         
         for index in winner_index:
-            self.player[index].addCash(pot_share)
+            print(str(self.players[index].getName())+" won "+str(pot_share))
+            self.players[index].addCash(pot_share)
         self.game_end_stat=True
         self.reset_table()
     
@@ -830,6 +833,7 @@ class poker_table():
                 self.add_pot(amount)
             elif amount>=player_cash:
                 self.players[player_index].Call(player_cash)
+                
                 self.players[player_index].All_in()
                 self.players[player_index].addPot(player_cash)
                 self.add_pot(player_cash)
@@ -981,6 +985,7 @@ class poker_table():
         com_card=list(com_card.keys())
         
         print("-----------------------------------------------")
+        print("Pot value: "+str(self.pot))
         print("Player name: "+str(player_name))
         print('Player Available Cash '+str(player_cash))
         print('Hole Cards')
@@ -995,14 +1000,14 @@ class poker_table():
             
     
     def play_game(self):
-        
+        self.set_blind_pos()
         self.deal.DealHoles(self.players)
         self.place_blinds()
         self.call=self.big_blind
         
         
         start_index=self.find_start_index()
-        self.first_round()
+        self.first_round(start_index)
         
         if not self.game_end_stat:
             start_index=self.find_start_index()
@@ -1017,7 +1022,20 @@ class poker_table():
             self.fourth_round(start_index)
             
             
+
             
+#########intialize##############
+deal=Deal()
+p1=Player("DK", 10000)
+p2=Player('PK', 10000)
+p3=Player('JK', 10000)
+players=[]
+players.append(p1)
+players.append(p2)
+players.append(p3)
+
+poker_table=poker_table(players,deal,100,50)
+poker_table.play_game()
         
         
         

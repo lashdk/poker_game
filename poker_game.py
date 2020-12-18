@@ -703,6 +703,7 @@ class poker_table():
                 show.append(best_list)
         
         show_sort=sorted(show,reverse=True,key=itemgetter(0,1,2))
+        print(show_sort)
         
         hand_list=[]
         max_hand=show_sort[0][0]
@@ -944,15 +945,15 @@ class poker_table():
     
     def first_round(self,start_index):
         self.betting_round(start_index)
-        self.deal.DealFlopCards()
+     
     
     def second_round(self,start_index):
         self.betting_round(start_index)
-        self.deal.DealFourth()
+        
     
     def third_round(self,start_index):
         self.betting_round(start_index)
-        self.deal.DealFifth()
+      
     
     def fourth_round(self,start_index):
         self.betting_round(start_index)
@@ -1010,14 +1011,17 @@ class poker_table():
         self.first_round(start_index)
         
         if not self.game_end_stat:
+            self.deal.DealFlopCards()
             start_index=self.find_start_index()
             self.second_round(start_index)
         
         if not self.game_end_stat:
+            self.deal.DealFourth()
             start_index=self.find_start_index()
             self.third_round(start_index)
             
         if not self.game_end_stat:
+            self.deal.DealFifth()
             start_index=self.find_start_index()
             self.fourth_round(start_index)
             

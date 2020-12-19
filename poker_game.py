@@ -750,17 +750,24 @@ class poker_table():
         self.deal.DeckReset()
     
     def pot_winner(self,winner_index):
-        l=len(winner_index)
-        
-        pot_share=math.floor(self.pot/l)
-        print('---------------------------------')
-        
-        
-        for index in winner_index:
-            print(str(self.players[index].getName())+" won "+str(pot_share))
-            self.players[index].addCash(pot_share)
+        if type(winner_index)==type(5):
+            pot_share=self.pot
+            self.players[winner_index].addCash(pot_share)
+            print(str(self.players[winner_index].getName())+" won "+str(pot_share))
+        else:
+            
+            
+            l=len(winner_index)
+            
+            pot_share=math.floor(self.pot/l)
+            print('---------------------------------')
+            
+            
+            for index in winner_index:
+                print(str(self.players[index].getName())+" won "+str(pot_share))
+                self.players[index].addCash(pot_share)
         self.game_end_stat=True
-        self.reset_table()
+        
     
     def place_blinds(self):
         self.players[self.big_pos].removeCash(self.big_blind)
@@ -827,6 +834,7 @@ class poker_table():
             
             
         elif input_action=="match_bet":
+            print(self.call)
             amount=self.call-player_pot
             if amount<player_cash:
                 self.players[player_index].Call(amount)
@@ -929,38 +937,24 @@ class poker_table():
         
         player_count=0
         all_in_stat=self.all_in_stat()
-        
-        
-        if all_in_stat:
-            winner_index=self.showdown()
-            self.pot_winner(winner_index)
+    
+        while not player_part_stat and not equal_bet_stat and not self.game_end_stat:
+            last_man_stat=self.check_last_man()
+            if last_man_stat:
+                winner_index=self.pot_last_man()
+                self.pot_winner(winner_index)
+                break
             
-        else:
-            
-        
-            
-            while not player_part_stat and not equal_bet_stat:
-                last_man_stat=self.check_last_man()
-               
                 
-                if last_man_stat:
-                    winner_index=self.pot_last_man()
-                    self.pot_winner(winner_index)
-                    break
-                
-              
-                
-                else:
-                
-                    
-                    fold_stat=self.check_fold_stat(self.active_index)
-                    if not fold_stat:
-                       player_count+=1
-                       all_stat=self.check_all_in_stat(self.active_index)
+            else:
+              fold_stat=self.check_fold_stat(self.active_index)
+              if not fold_stat:
+                player_count+=1
+                all_stat=self.check_all_in_stat(self.active_index)
                        
-                       if not all_stat:
-                           action=self.action_logic(self.active_index)
-                           self.action(action,self.active_index)
+                if not all_stat:
+                    action=self.action_logic(self.active_index)
+                    self.action(action,self.active_index)
                     
                     
                     self.active_player_update()
@@ -970,20 +964,28 @@ class poker_table():
     
     def first_round(self,start_index):
         self.betting_round(start_index)
+        self.deal.DealFlopCards()
+        # print("first round")
      
     
     def second_round(self,start_index):
         self.betting_round(start_index)
+        self.deal.DealFourth()
+        # print("second round")
         
     
     def third_round(self,start_index):
         self.betting_round(start_index)
+        self.deal.DealFifth()
+        # print("third round")
       
     
     def fourth_round(self,start_index):
         self.betting_round(start_index)
         winner_index=self.showdown()
         self.pot_winner(winner_index)
+        # print("fourth round")
+        
         
     
     def find_start_index(self):
@@ -1033,24 +1035,29 @@ class poker_table():
         self.place_blinds()
         self.call=self.big_blind
         
-        
+    
         start_index=self.find_start_index()
         self.first_round(start_index)
         
         if not self.game_end_stat:
-            self.deal.DealFlopCards()
+            print(self.game_end_stat)
+            print("second round")
             start_index=self.find_start_index()
             self.second_round(start_index)
         
         if not self.game_end_stat:
-            self.deal.DealFourth()
+            print(self.game_end_stat)
+            print("third round")
             start_index=self.find_start_index()
             self.third_round(start_index)
             
         if not self.game_end_stat:
-            self.deal.DealFifth()
+            print("fourth round")
+           
             start_index=self.find_start_index()
             self.fourth_round(start_index)
+        
+        self.reset_table()
             
             
 

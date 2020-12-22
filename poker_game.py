@@ -741,13 +741,19 @@ class poker_table():
         self.call=0
         self.active_index=self.small_pos
         self.active_player_count=len(self.players)
-        self.dealer+=1
+        self.dealer_update()
+        
         self.game_end_stat=False
         
         for player in self.players:
             player.ResetHand()
         
         self.deal.DeckReset()
+        
+    def dealer_update(self):
+        self.dealer+=1
+        if self.dealer>=len(self.players):
+            self.dealer=0
     
     def pot_winner(self,winner_index):
         if type(winner_index)==type(5):
@@ -918,7 +924,7 @@ class poker_table():
             if player.getAllStat():
                 count+=1
         
-        if count==self.active_player_count:
+        if count==self.active_player_count or count==self.active_player_count -1:
             return True
         else:
             return False
@@ -934,33 +940,41 @@ class poker_table():
         player_part_stat=False
         
         equal_bet_stat=False
+        round_cond=False
         
         player_count=0
         all_in_stat=self.all_in_stat()
+        
+        if not all_in_stat:
     
-        while not player_part_stat and not equal_bet_stat and not self.game_end_stat:
-            last_man_stat=self.check_last_man()
-            if last_man_stat:
-                winner_index=self.pot_last_man()
-                self.pot_winner(winner_index)
-                break
-            
+            while not round_cond:
+                last_man_stat=self.check_last_man()
+                if last_man_stat:
+                    winner_index=self.pot_last_man()
+                    self.pot_winner(winner_index)
+                    break
                 
-            else:
-              fold_stat=self.check_fold_stat(self.active_index)
-              if not fold_stat:
-                player_count+=1
-                all_stat=self.check_all_in_stat(self.active_index)
-                       
-                if not all_stat:
-                    action=self.action_logic(self.active_index)
-                    self.action(action,self.active_index)
                     
-                    
-                    self.active_player_update()
-                    player_part_stat=self.check_player_part_stat(player_count)
-                    
-                    equal_bet_stat=self.check_equal_bet_stat()
+                else:
+                  fold_stat=self.check_fold_stat(self.active_index)
+                  if not fold_stat:
+                    player_count+=1
+                    all_stat=self.check_all_in_stat(self.active_index)
+                           
+                    if not all_stat:
+                        action=self.action_logic(self.active_index)
+                        self.action(action,self.active_index)
+                        
+                        
+                        self.active_player_update()
+                        player_part_stat=self.check_player_part_stat(player_count)
+                        
+                        equal_bet_stat=self.check_equal_bet_stat()
+                        print('player_part_stat ',player_part_stat)
+                        print('equal bet stat ',equal_bet_stat)
+                        round_cond=player_part_stat and equal_bet_stat
+                        print('round_end_stat',round_cond)
+                        
     
     def first_round(self,start_index):
         self.betting_round(start_index)

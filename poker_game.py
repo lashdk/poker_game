@@ -815,7 +815,7 @@ class poker_table():
                 if action_dict[action]:
                     print(str(action),end=" ")
     
-            taken=str(input("Choose a suitable action")).lower()
+            taken=str(input("Choose a suitable action: ")).lower()
             
             if action_dict[taken]:
                 legal_action=False
